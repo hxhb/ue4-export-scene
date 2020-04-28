@@ -1,5 +1,5 @@
 #pragma once
-#include "Serialization/DuplicatedDataWriter.h"
+#include "DuplicatedDataWriter.h"
 
 namespace FBlueprintSupportEx
 {
@@ -12,7 +12,7 @@ namespace FBlueprintSupportEx
 	 * @param	StructToDuplicate			Instance of the struct that is about to be duplicated
 	 * @param	Writer						duplicate writer instance to write the duplicated data to
 	 */
-	void DuplicateAllFields(UStruct* StructToDuplicate, FDuplicateDataWriter& Writer)
+	void DuplicateAllFields(UStruct* StructToDuplicate, FDuplicateDataWriterEx& Writer)
 	{
 		// This is a very simple fake topological-sort to make sure everything contained in the class
 		// is processed before the class itself is, and each function parameter is processed before the function

@@ -16,6 +16,6 @@ class EXPORTSCENERUNTIME_API UFlibExportSceneHelper : public UBlueprintFunctionL
 public:
 	static UPackage* GetPackageByLongPackageName(const FString& LongPackageName);
 
-	static bool ParserLevel(UObject const* SourceObject, UObject* DestOuter, const FName DestName = NAME_None, EObjectFlags FlagMask = RF_AllFlags, UClass* DestClass = NULL, EDuplicateMode::Type DuplicateMode = EDuplicateMode::PIE, EInternalObjectFlags InternalFlagsMask = EInternalObjectFlags::AllFlags);
+	static bool ParserLevel(UObject const* SourceObject, UObject* DestOuter, const FName DestName = NAME_None, EObjectFlags FlagMask = RF_AllFlags, UClass* DestClass = NULL, EDuplicateMode::Type DuplicateMode = EDuplicateMode::World, EInternalObjectFlags InternalFlagsMask = EInternalObjectFlags::AllFlags);
 
 };

@@ -2,6 +2,7 @@
 
 
 #include "FlibExportSceneEditorHelper.h"
+#include "FlibExportSceneHelper.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Editor/EditorEngine.h"
 
@@ -27,6 +28,12 @@ UWorld* UFlibExportSceneEditorHelper::GetEditorWorld()
 
 bool UFlibExportSceneEditorHelper::ExportEditorScene()
 {
+	UWorld* World = UFlibExportSceneEditorHelper::GetEditorWorld();
+	FString Name = World->GetMapName();
+	UClass* Class = World->GetClass();
+	UObject* Outer = World->GetOuter();
 
+	
+	UFlibExportSceneHelper::ParserLevel(World, Outer, FName(*World->GetName()));
 	return false;
 }

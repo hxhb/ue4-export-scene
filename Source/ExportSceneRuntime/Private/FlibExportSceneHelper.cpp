@@ -2,8 +2,8 @@
 
 
 #include "FlibExportSceneHelper.h"
-#include "Flib/FLibAssetManageHelperEx.h"
 #include "Utils/FBlueprintSupportEx.hpp"
+#include "DuplicatedDataWriter.h"
 
 #include "PropertyPortFlags.h"
 #include "Serialization/LargeMemoryData.h"
@@ -23,7 +23,7 @@
 struct FObjectDuplicationHelperMethods
 {
 	// Helper method intended to gather up all default subobjects that have already been created and prepare them for duplication.
-	static void GatherDefaultSubobjectsForDuplication(UObject* SrcObject, UObject* DstObject, FUObjectAnnotationSparse<FDuplicatedObject, false>& DuplicatedObjectAnnotation, FDuplicateDataWriter& Writer)
+	static void GatherDefaultSubobjectsForDuplication(UObject* SrcObject, UObject* DstObject, FUObjectAnnotationSparse<FDuplicatedObject, false>& DuplicatedObjectAnnotation, FDuplicateDataWriterEx& Writer)
 	{
 		TArray<UObject*> SrcDefaultSubobjects;
 		SrcObject->GetDefaultSubobjects(SrcDefaultSubobjects);
@@ -54,7 +54,8 @@ UPackage* UFlibExportSceneHelper::GetPackageByLongPackageName(const FString& Lon
 {
 	UPackage* ResultPackage = NULL;
 	TArray<FAssetData> AssetDatas;
-	UFLibAssetManageHelperEx::GetSpecifyAssetData(LongPackageName, AssetDatas, true);
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	AssetRegistryModule.Get().GetAssetsByPackageName(*LongPackageName, AssetDatas, true);
 
 	if (!!AssetDatas.Num())
 	{
@@ -166,7 +167,7 @@ bool UFlibExportSceneHelper::ParserLevel(UObject const* SourceObject, UObject* D
 	}
 
 	// Read from the source object(s)
-	FDuplicateDataWriter Writer(
+	FDuplicateDataWriterEx Writer(
 		DuplicatedObjectAnnotation,	// Ref: Object annotation which stores the duplicated object for each source object
 		ObjectData,					// Out: Serialized object data
 		Parameters.SourceObject,	// Source object to copy
