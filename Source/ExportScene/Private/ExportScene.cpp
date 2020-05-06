@@ -1,9 +1,10 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "ExportScene.h"
-
+#include "ExportSceneEdMode.h"
 #include "FlibExportSceneEditorHelper.h"
 
+#include "EditorStyleSet.h"
 #include "ExportSceneStyle.h"
 #include "ExportSceneCommands.h"
 #include "Misc/MessageDialog.h"
@@ -46,6 +47,9 @@ void FExportSceneModule::StartupModule()
 		
 		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
 	}
+
+	FEditorModeRegistry::Get().RegisterMode<FExportSceneEdMode>(FExportSceneEdMode::EM_ExportSceneEdModeId, LOCTEXT("ExportSceneEdModeName", "ExportSceneEdMode"), FSlateIcon(FEditorStyle::GetStyleSetName(), "DeviceDetails.Share"), true);
+
 }
 
 void FExportSceneModule::ShutdownModule()
@@ -55,6 +59,8 @@ void FExportSceneModule::ShutdownModule()
 	FExportSceneStyle::Shutdown();
 
 	FExportSceneCommands::Unregister();
+
+	FEditorModeRegistry::Get().UnregisterMode(FExportSceneEdMode::EM_ExportSceneEdModeId);
 }
 
 void FExportSceneModule::PluginButtonClicked()

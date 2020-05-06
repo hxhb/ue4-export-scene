@@ -27,7 +27,9 @@ public class ExportScene : ModuleRules
 			{
 				"Core",
                 "UnrealEd",
-                "ExportSceneRuntime"
+                "ExportSceneRuntime",
+                "DesktopPlatform",
+                "EditorStyle"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

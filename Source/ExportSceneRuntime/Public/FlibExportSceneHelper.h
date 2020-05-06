@@ -2,10 +2,63 @@
 
 #pragma once
 
+#include "UObject/UObjectIterator.h"
+#include "UnrealExporter.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FlibExportSceneHelper.generated.h"
 
+
+/*-----------------------------------------------------------------------------
+   Actor adding/deleting functions.
+-----------------------------------------------------------------------------*/
+
+class FSceneActorExportObjectInnerContext : public FExportObjectInnerContext
+{
+public:
+	FSceneActorExportObjectInnerContext()
+		//call the empty version of the base class
+		: FExportObjectInnerContext(false)
+	{
+		// For each object . . .
+		for (UObject* InnerObj : TObjectRange<UObject>(RF_ClassDefaultObject, /** bIncludeDerivedClasses */ true, /** IternalExcludeFlags */ EInternalObjectFlags::PendingKill))
+		{
+			UObject* OuterObj = InnerObj->GetOuter();
+
+			//assume this is not part of a selected actor
+			bool bIsChildOfSelectedActor = false;
+
+			UObject* TestParent = OuterObj;
+			while (TestParent)
+			{
+				AActor* TestParentAsActor = Cast<AActor>(TestParent);
+				if (TestParentAsActor && TestParentAsActor->ActorHasTag(TEXT("Export")))
+				{
+					bIsChildOfSelectedActor = true;
+					break;
+				}
+				TestParent = TestParent->GetOuter();
+			}
+
+			if (bIsChildOfSelectedActor)
+			{
+				InnerList* Inners = ObjectToInnerMap.Find(OuterObj);
+				if (Inners)
+				{
+					// Add object to existing inner list.
+					Inners->Add(InnerObj);
+				}
+				else
+				{
+					// Create a new inner list for the outer object.
+					InnerList& InnersForOuterObject = ObjectToInnerMap.Add(OuterObj, InnerList());
+					InnersForOuterObject.Add(InnerObj);
+				}
+			}
+		}
+	}
+
+};
 /**
  * 
  */
@@ -16,6 +69,5 @@ class EXPORTSCENERUNTIME_API UFlibExportSceneHelper : public UBlueprintFunctionL
 public:
 	static UPackage* GetPackageByLongPackageName(const FString& LongPackageName);
 
-	static bool ParserLevel(UObject const* SourceObject, UObject* DestOuter, const FName DestName = NAME_None, EObjectFlags FlagMask = RF_AllFlags, UClass* DestClass = NULL, EDuplicateMode::Type DuplicateMode = EDuplicateMode::World, EInternalObjectFlags InternalFlagsMask = EInternalObjectFlags::AllFlags);
-
+	static FString ExportSceneActors(UWorld* InWorld);
 };
