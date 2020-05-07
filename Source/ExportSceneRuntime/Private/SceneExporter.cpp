@@ -1,4 +1,4 @@
-#include "ExporterT3D.h"
+#include "SceneExporter.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "InstancedFoliage.h"
@@ -9,17 +9,9 @@
 #include "UObject/PropertyPortFlags.h"
 #include "Engine/BlueprintGeneratedClass.h"
 
-//
-// Output a vector.
-//
-TCHAR* SetFVECTOR(TCHAR* Dest, const FVector* FVector)
-{
-	FCString::Sprintf(Dest, TEXT("%+013.6f,%+013.6f,%+013.6f"), FVector->X, FVector->Y, FVector->Z);
-	return Dest;
-}
 
 
-USceneExporterT3D::USceneExporterT3D(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer()*/)
+USceneExporter::USceneExporter(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer()*/)
 	:Super(ObjectInitializer)
 {
 	SupportedClass = UWorld::StaticClass();
@@ -29,7 +21,7 @@ USceneExporterT3D::USceneExporterT3D(const FObjectInitializer& ObjectInitializer
 	FormatDescription.Add(TEXT("Export Scene as text"));
 }
 
-bool USceneExporterT3D::ExportText(const FExportObjectInnerContext* Context, UObject* Object, const TCHAR* Type, FOutputDevice& Ar, FFeedbackContext* Warn, uint32 PortFlags/*=0 */)
+bool USceneExporter::ExportText(const FExportObjectInnerContext* Context, UObject* Object, const TCHAR* Type, FOutputDevice& Ar, FFeedbackContext* Warn, uint32 PortFlags/*=0 */)
 {
 	UWorld* World = CastChecked<UWorld>(Object);
 
@@ -160,17 +152,17 @@ bool USceneExporterT3D::ExportText(const FExportObjectInnerContext* Context, UOb
 	return 1;
 }
 
-void USceneExporterT3D::ExportPackageObject(FExportPackageParams& ExpPackageParams)
+void USceneExporter::ExportPackageObject(FExportPackageParams& ExpPackageParams)
 {
 
 }
 
-void USceneExporterT3D::ExportPackageInners(FExportPackageParams& ExpPackageParams)
+void USceneExporter::ExportPackageInners(FExportPackageParams& ExpPackageParams)
 {
 
 }
 
-void USceneExporterT3D::ExportComponentExtra(const FExportObjectInnerContext* Context, const TArray<UActorComponent*>& Components, FOutputDevice& Ar, uint32 PortFlags)
+void USceneExporter::ExportComponentExtra(const FExportObjectInnerContext* Context, const TArray<UActorComponent*>& Components, FOutputDevice& Ar, uint32 PortFlags)
 {
 	for (UActorComponent* ActorComponent : Components)
 	{

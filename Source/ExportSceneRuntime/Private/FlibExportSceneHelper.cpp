@@ -2,7 +2,7 @@
 
 
 #include "FlibExportSceneHelper.h"
-#include "ExporterT3D.h"
+#include "SceneExporter.h"
 
 #include "HAL/PlatformApplicationMisc.h"
 #include "Exporters/Exporter.h"

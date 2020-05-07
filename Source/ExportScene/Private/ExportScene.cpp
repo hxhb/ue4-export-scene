@@ -3,10 +3,7 @@
 #include "ExportScene.h"
 #include "ExportSceneEdMode.h"
 #include "FlibExportSceneEditorHelper.h"
-
 #include "EditorStyleSet.h"
-#include "ExportSceneStyle.h"
-#include "ExportSceneCommands.h"
 #include "Misc/MessageDialog.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 
