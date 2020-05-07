@@ -1,5 +1,6 @@
 ﻿#include "ExportSceneEdModeTookit.h"
 #include "ExportSceneEdMode.h"
+#include "FlibExportSceneEditorHelper.h"
 
 FExportSceneEdModeToolkit::FExportSceneEdModeToolkit(int32 iMode)
 {
@@ -28,9 +29,66 @@ class FEdMode* FExportSceneEdModeToolkit::GetEditorMode() const
 	return GLevelEditorModeTools().GetActiveMode(FExportSceneEdMode::EM_ExportSceneEdModeId);
 }
 
+
+namespace
+{
+	static void DoExport()
+	{
+		UWorld* World = UFlibExportSceneEditorHelper::GetEditorWorld();
+		UFlibExportSceneEditorHelper::ExportEditorScene(World, TArray<FName>{TEXT("Export")});
+	}
+	static void DoImport()
+	{
+		UWorld* World = UFlibExportSceneEditorHelper::GetEditorWorld();
+		UFlibExportSceneEditorHelper::ImportEditorScene(World, TEXT(""));
+	}
+}
 void FExportSceneEdModeToolkit::ShowExportPanel()
 {
-	UE_LOG(LogTemp, Log, TEXT("Show Export Panel"));
+	SAssignNew(ToolkitWidget, SBorder)
+	.VAlign(VAlign_Top)
+	.Padding(FMargin(10.f, 0.f))
+	[
+		SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.VAlign(VAlign_Center)
+		.HAlign(HAlign_Center)
+		.AutoHeight()
+		.Padding(FMargin(0.f, 10.f))
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.FillWidth(21.f)
+			[
+				SNew(SButton)
+			]
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.FillWidth(21.f)
+			[
+				SNew(SButton)
+				.Text(FText::FromString("ExportMode"))
+				.OnClicked_Lambda([&]()
+				{
+					DoExport();
+					return FReply::Handled();
+				})
+			]
+			+SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.FillWidth(21.f)
+			[
+				SNew(SButton)
+				.Text(FText::FromString("ImportMode"))
+				.OnClicked_Lambda([&]()
+				{
+					DoImport();
+					return FReply::Handled();
+				})
+			]
+		]
+	];
 }
 
 void FExportSceneEdModeToolkit::ShowImportPanel()

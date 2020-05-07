@@ -1,5 +1,6 @@
 #include "ExportSceneEdMode.h"
 #include "ExportSceneEdModeTookit.h"
+#include "Toolkits/ToolkitManager.h"
 
 const FEditorModeID FExportSceneEdMode::EM_ExportSceneEdModeId = TEXT("EM_ExportScene");
 
@@ -27,6 +28,12 @@ void FExportSceneEdMode::Enter()
 
 void FExportSceneEdMode::Exit()
 {
+	if (Toolkit.IsValid())
+	{
+		FToolkitManager::Get().CloseToolkit(Toolkit.ToSharedRef());
+		Toolkit.Reset();
+	}
+
 	// Call base Exit method to ensure proper cleanup
 	FEdMode::Exit();
 }

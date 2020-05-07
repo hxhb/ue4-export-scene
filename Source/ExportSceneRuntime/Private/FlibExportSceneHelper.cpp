@@ -2,6 +2,7 @@
 
 
 #include "FlibExportSceneHelper.h"
+#include "ExporterT3D.h"
 
 #include "HAL/PlatformApplicationMisc.h"
 #include "Exporters/Exporter.h"
@@ -23,12 +24,13 @@ UPackage* UFlibExportSceneHelper::GetPackageByLongPackageName(const FString& Lon
 	return ResultPackage;
 }
 
-FString UFlibExportSceneHelper::ExportSceneActors(UWorld* InWorld)
+FString UFlibExportSceneHelper::ExportSceneActors(UWorld* InWorld, const TArray<FName>& InTags)
 {
 	// Export the actors.
 	FStringOutputDevice Ar;
-	const FSceneActorExportObjectInnerContext Context;
-	UExporter::ExportToOutputDevice(&Context, InWorld, NULL, Ar, TEXT("copy"), 0, PPF_DeepCompareInstances | PPF_ExportsNotFullyQualified);
+	const FSceneActorExportObjectInnerContext Context(InTags);
+
+	UExporter::ExportToOutputDevice(&Context, InWorld, NULL, Ar, TEXT("EXPORT"), 0, PPF_DeepCompareInstances | PPF_ExportsNotFullyQualified);
 	FPlatformApplicationMisc::ClipboardCopy(*Ar);
 
 	return MoveTemp(Ar);

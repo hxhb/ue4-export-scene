@@ -30,7 +30,8 @@ public class ExportSceneRuntime : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "ApplicationCore"
+                "ApplicationCore",
+                "Foliage"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -51,5 +52,8 @@ public class ExportSceneRuntime : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
             );
+
+
+        OptimizeCode = CodeOptimization.InShippingBuildsOnly;
     }
 }

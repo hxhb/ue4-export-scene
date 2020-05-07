@@ -16,7 +16,7 @@
 class FSceneActorExportObjectInnerContext : public FExportObjectInnerContext
 {
 public:
-	FSceneActorExportObjectInnerContext()
+	FSceneActorExportObjectInnerContext(const TArray<FName>& InActorTags)
 		//call the empty version of the base class
 		: FExportObjectInnerContext(false)
 	{
@@ -32,11 +32,19 @@ public:
 			while (TestParent)
 			{
 				AActor* TestParentAsActor = Cast<AActor>(TestParent);
-				if (TestParentAsActor && TestParentAsActor->ActorHasTag(TEXT("Export")))
-				{
-					bIsChildOfSelectedActor = true;
+
+				if (!TestParentAsActor)
 					break;
+				bIsChildOfSelectedActor = true;
+				for (const auto& Tag : InActorTags)
+				{
+					if (!TestParentAsActor->ActorHasTag(Tag))
+					{
+						bIsChildOfSelectedActor = false;
+						break;
+					}
 				}
+
 				TestParent = TestParent->GetOuter();
 			}
 
@@ -69,5 +77,6 @@ class EXPORTSCENERUNTIME_API UFlibExportSceneHelper : public UBlueprintFunctionL
 public:
 	static UPackage* GetPackageByLongPackageName(const FString& LongPackageName);
 
-	static FString ExportSceneActors(UWorld* InWorld);
+	static FString ExportSceneActors(UWorld* InWorld,const TArray<FName>& InTags);
+	static bool ImportEditorScene(UWorld* World, const FString& InExportWords);
 };

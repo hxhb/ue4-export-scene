@@ -15,5 +15,6 @@ class EXPORTSCENE_API UFlibExportSceneEditorHelper : public UBlueprintFunctionLi
 	GENERATED_BODY()
 public:
 	static UWorld* GetEditorWorld();
-	static bool ExportEditorScene();
+	static bool ExportEditorScene(UWorld* World, const TArray<FName>& InTags);
+	static bool ImportEditorScene(UWorld* World, const FString& InExportWords);
 };

@@ -31,9 +31,9 @@ UWorld* UFlibExportSceneEditorHelper::GetEditorWorld()
 	return World;
 }
 
-bool UFlibExportSceneEditorHelper::ExportEditorScene()
+bool UFlibExportSceneEditorHelper::ExportEditorScene(UWorld* World,const TArray<FName>& InTags)
 {
-	UWorld* World = UFlibExportSceneEditorHelper::GetEditorWorld();
+	// UWorld* World = UFlibExportSceneEditorHelper::GetEditorWorld();
 	FString MapName = World->GetMapName();
 	UClass* Class = World->GetClass();
 	UObject* Outer = World->GetOuter();
@@ -55,7 +55,7 @@ bool UFlibExportSceneEditorHelper::ExportEditorScene()
 			FString CurrentTime = FDateTime::Now().ToString();
 			FString ExportFilePath = FPaths::Combine(OutPath, MapName + TEXT("ExportScene") + CurrentTime + TEXT(".txt"));
 
-			FString ReceiveSerializeData = UFlibExportSceneHelper::ExportSceneActors(World);
+			FString ReceiveSerializeData = UFlibExportSceneHelper::ExportSceneActors(World, InTags);
 
 			bool bSaveStatus = false;
 			if (!ReceiveSerializeData.IsEmpty())
@@ -68,5 +68,10 @@ bool UFlibExportSceneEditorHelper::ExportEditorScene()
 	return false;
 }
 
+
+bool UFlibExportSceneEditorHelper::ImportEditorScene(UWorld* World, const FString& InExportWords)
+{
+	return false;
+}
 
 #undef LOCTEXT_NAMESPACE
