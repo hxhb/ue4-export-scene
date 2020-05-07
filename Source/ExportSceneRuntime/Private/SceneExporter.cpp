@@ -1,4 +1,5 @@
 #include "SceneExporter.h"
+#include "ParamParser.hpp"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "InstancedFoliage.h"
