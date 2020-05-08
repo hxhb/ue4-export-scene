@@ -10,7 +10,7 @@
 #include "UObject/PropertyPortFlags.h"
 #include "Engine/BlueprintGeneratedClass.h"
 
-
+#pragma warning(disable:4946)
 
 USceneExporter::USceneExporter(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer()*/)
 	:Super(ObjectInitializer)

@@ -1,4 +1,4 @@
-﻿#include "ExportSceneEdModeTookit.h"
+#include "ExportSceneEdModeTookit.h"
 #include "ExportSceneEdMode.h"
 #include "FlibExportSceneEditorHelper.h"
 
@@ -57,12 +57,6 @@ void FExportSceneEdModeToolkit::ShowExportPanel()
 		.Padding(FMargin(0.f, 10.f))
 		[
 			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.HAlign(HAlign_Left)
-			.FillWidth(21.f)
-			[
-				SNew(SButton)
-			]
 			+ SHorizontalBox::Slot()
 			.HAlign(HAlign_Left)
 			.FillWidth(21.f)
