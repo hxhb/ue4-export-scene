@@ -78,5 +78,9 @@ public:
 	static UPackage* GetPackageByLongPackageName(const FString& LongPackageName);
 
 	static FString ExportSceneActors(UWorld* InWorld,const TArray<FName>& InTags);
+
 	static bool ImportEditorScene(UWorld* World, const FString& InExportWords);
+
+	UFUNCTION(BlueprintCallable/*,meta=(CallableWithoutWorldContext,WorldContext="WorldContextObject")*/)
+		static bool LoadScene(UObject* WorldContextObject,const FString& InSceneInfoPath);
 };

@@ -62,7 +62,7 @@ void FExportSceneEdModeToolkit::ShowExportPanel()
 			.FillWidth(21.f)
 			[
 				SNew(SButton)
-				.Text(FText::FromString("ExportMode"))
+				.Text(FText::FromString("Export"))
 				.OnClicked_Lambda([&]()
 				{
 					DoExport();
@@ -74,7 +74,7 @@ void FExportSceneEdModeToolkit::ShowExportPanel()
 			.FillWidth(21.f)
 			[
 				SNew(SButton)
-				.Text(FText::FromString("ImportMode"))
+				.Text(FText::FromString("Import"))
 				.OnClicked_Lambda([&]()
 				{
 					DoImport();

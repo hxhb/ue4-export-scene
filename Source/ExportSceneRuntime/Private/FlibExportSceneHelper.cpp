@@ -3,12 +3,15 @@
 
 #include "FlibExportSceneHelper.h"
 #include "SceneExporter.h"
+#include "ImportFactory.h"
+#include "FileHelper.h"
 
 #include "HAL/PlatformApplicationMisc.h"
 #include "Exporters/Exporter.h"
 #include "AssetData.h"
 #include "PropertyPortFlags.h"
 #include "AssetRegistryModule.h"
+#include "Kismet/GameplayStatics.h"
 
 UPackage* UFlibExportSceneHelper::GetPackageByLongPackageName(const FString& LongPackageName)
 {
@@ -34,5 +37,26 @@ FString UFlibExportSceneHelper::ExportSceneActors(UWorld* InWorld, const TArray<
 	FPlatformApplicationMisc::ClipboardCopy(*Ar);
 
 	return MoveTemp(Ar);
+}
+
+
+bool UFlibExportSceneHelper::LoadScene(UObject* WorldContextObject, const FString& InSceneInfoPath)
+{
+	bool status = true;
+	UWorld* World = UGameplayStatics::GetGameInstance(WorldContextObject)->GetWorld();
+	if (!InSceneInfoPath.IsEmpty() && FPaths::FileExists(InSceneInfoPath))
+	{
+		FString ReadContent;
+		FFileHelper::LoadFileToString(ReadContent, *InSceneInfoPath);
+		if (!ReadContent.IsEmpty())
+		{
+			const TCHAR* Paste = *ReadContent;
+			UImportFactory* ImportFactory = NewObject<UImportFactory>();
+			ImportFactory->FactoryCreateText(ULevel::StaticClass(), World->GetCurrentLevel(), World->GetCurrentLevel()->GetFName(),
+				RF_Transactional, NULL, TEXT("paste"), Paste, Paste + FCString::Strlen(Paste), NULL);
+			
+		}
+	}
+	return status;
 }
 

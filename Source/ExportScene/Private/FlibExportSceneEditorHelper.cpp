@@ -8,6 +8,7 @@
 #include "DesktopPlatformModule.h"
 #include "IPluginManager.h"
 #include "Misc/FileHelper.h"
+#include "ImportFactory.h"
 
 #define LOCTEXT_NAMESPACE "FExportSceneModule"
 
@@ -71,6 +72,40 @@ bool UFlibExportSceneEditorHelper::ExportEditorScene(UWorld* World,const TArray<
 
 bool UFlibExportSceneEditorHelper::ImportEditorScene(UWorld* World, const FString& InExportWords)
 {
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	FString PluginPath = FPaths::ConvertRelativePathToFull(IPluginManager::Get().FindPlugin(TEXT("ExportScene"))->GetBaseDir());
+
+	FString OutPath;
+	if (DesktopPlatform)
+	{
+		TArray<FString> OpenFilenames;
+		const bool bOpened = DesktopPlatform->OpenFileDialog(
+			nullptr,
+			LOCTEXT("Open Export Scene file", "Open .txt").ToString(),
+			FString(TEXT("")),
+			TEXT(""),
+			TEXT("ExportScene file (*.txt)|*.txt"),
+			EFileDialogFlags::None,
+			OpenFilenames
+		);
+
+		if (OpenFilenames.Num() > 0)
+		{
+			OutPath = FPaths::ConvertRelativePathToFull(OpenFilenames[0]);
+		}
+	}
+	if (!OutPath.IsEmpty() && FPaths::FileExists(OutPath))
+	{
+		FString ReadContent;
+		FFileHelper::LoadFileToString(ReadContent, *OutPath);
+		if (!ReadContent.IsEmpty())
+		{
+			const TCHAR* Paste = *ReadContent;
+			UImportFactory* ImportFactory = NewObject<UImportFactory>();
+			ImportFactory->FactoryCreateText(ULevel::StaticClass(), World->GetCurrentLevel(), World->GetCurrentLevel()->GetFName(),
+				RF_Transactional, NULL, TEXT("paste"), Paste, Paste + FCString::Strlen(Paste), NULL);
+		}
+	}
 	return false;
 }
 
