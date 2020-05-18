@@ -400,7 +400,7 @@ const TCHAR* UImportFactory::ImportObjectProperties(FImportObjectParamsEx& InPar
 			InParams.ObjectStruct->InstanceSubobjectTemplates(InParams.DestData, SubobjectArchetype, SubobjectArchetype->GetClass(),
 				InParams.SubobjectOuter, &InstanceGraph);
 		}
-
+#if WITH_EDITOR
 		if (InParams.bShouldCallEditChange)
 		{
 			// notify the object that it has just been imported
@@ -409,6 +409,7 @@ const TCHAR* UImportFactory::ImportObjectProperties(FImportObjectParamsEx& InPar
 			// notify the object that it has been edited
 			InParams.SubobjectOuter->PostEditChange();
 		}
+#endif
 		InParams.SubobjectRoot->CheckDefaultSubobjects();
 	}
 
@@ -511,10 +512,12 @@ const TCHAR* UImportFactory::ImportProperties(
 
 	// The PortFlags to use for all ImportText calls
 	uint32 PortFlags = PPF_Delimited | PPF_CheckReferences;
+#if WITH_EDITORONLY_DATA
 	if (GIsImportingT3D)
 	{
 		PortFlags |= PPF_AttemptNonQualifiedSearch;
 	}
+#endif
 
 	FString StrLine;
 

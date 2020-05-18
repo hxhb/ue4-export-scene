@@ -92,10 +92,13 @@ bool USceneExporter::ExportText(const FExportObjectInnerContext* Context, UObjec
 		if (Actor /*&& !Actor->IsA(AGroupActor::StaticClass())*/ &&
 			(bAllActors || Actor->ActorHasTag(TEXT("Export"))))
 		{
-			if (Actor->ShouldExport())
+			if (true/*Actor->ShouldExport()*/)
 			{
+
+#if WITH_EDITOR
 				// Temporarily unbind dynamic delegates so we don't export the bindings.
 				UBlueprintGeneratedClass::UnbindDynamicDelegates(Actor->GetClass(), Actor);
+#endif
 
 				AActor* ParentActor = Actor->GetAttachParentActor();
 				FName SocketName = Actor->GetAttachParentSocketName();
@@ -103,10 +106,10 @@ bool USceneExporter::ExportText(const FExportObjectInnerContext* Context, UObjec
 
 				FString ParentActorString = (ParentActor ? FString::Printf(TEXT(" ParentActor=%s"), *ParentActor->GetName()) : TEXT(""));
 				FString SocketNameString = ((ParentActor && SocketName != NAME_None) ? FString::Printf(TEXT(" SocketName=%s"), *SocketName.ToString()) : TEXT(""));
-				FString GroupActor = (Actor->GroupActor ? FString::Printf(TEXT(" GroupActor=%s"), *Actor->GroupActor->GetName()) : TEXT(""));
-				Ar.Logf(TEXT("%sBegin Actor Class=%s Name=%s Archetype=%s'%s'%s%s%s") LINE_TERMINATOR,
+				//FString GroupActor = (Actor->GroupActor ? FString::Printf(TEXT(" GroupActor=%s"), *Actor->GroupActor->GetName()) : TEXT(""));
+				Ar.Logf(TEXT("%sBegin Actor Class=%s Name=%s Archetype=%s'%s'%s%s") LINE_TERMINATOR,
 					FCString::Spc(TextIndent), *Actor->GetClass()->GetPathName(), *Actor->GetName(),
-					*Actor->GetArchetype()->GetClass()->GetPathName(), *Actor->GetArchetype()->GetPathName(), *ParentActorString, *SocketNameString, *GroupActor);
+					*Actor->GetArchetype()->GetClass()->GetPathName(), *Actor->GetArchetype()->GetPathName(), *ParentActorString, *SocketNameString);
 
 				ExportRootScope = Actor;
 				ExportObjectInner(Context, Actor, Ar, PortFlags | PPF_ExportsNotFullyQualified);
@@ -169,6 +172,7 @@ void USceneExporter::ExportComponentExtra(const FExportObjectInnerContext* Conte
 	{
 		if (ActorComponent != nullptr && ActorComponent->GetWorld() != nullptr)
 		{
+#if WITH_EDITOR
 			// Go through all FoliageActors in the world, since we support cross-level bases
 			for (TActorIterator<AInstancedFoliageActor> It(ActorComponent->GetWorld()); It; ++It)
 			{
@@ -194,6 +198,7 @@ void USceneExporter::ExportComponentExtra(const FExportObjectInnerContext* Conte
 					}
 				}
 			}
+#endif
 		}
 	}
 }
