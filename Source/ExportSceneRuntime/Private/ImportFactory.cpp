@@ -589,7 +589,7 @@ const TCHAR* UImportFactory::ImportProperties(
 		//		ImportedBrush = 1;
 		//	}
 		//}
-
+#if ENGINE_MINOR_VERSION > 422
 		/*else */if (GetBEGIN(&Str, TEXT("Foliage")))
 		{
 			UFoliageType* SourceFoliageType;
@@ -649,7 +649,9 @@ const TCHAR* UImportFactory::ImportProperties(
 				}
 			}
 		}
-		else if (GetBEGIN(&Str, TEXT("Object")))
+		else 
+#endif
+		if (GetBEGIN(&Str, TEXT("Object")))
 		{
 			// If SubobjectOuter is NULL, we are importing defaults for a UScriptStruct's defaultproperties block
 			if (!bSubObjectsAllowed)
