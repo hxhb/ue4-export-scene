@@ -88,8 +88,7 @@ UObject* UImportFactory::FactoryCreateText
 	UObject*			Context,
 	const TCHAR*		Type,
 	const TCHAR*&		Buffer,
-	const TCHAR*		BufferEnd,
-	FFeedbackContext*	Warn
+	const TCHAR*		BufferEnd
 )
 {
 	// GEditor->GetEditorSubsystem<UImportSubsystem>()->BroadcastAssetPreImport(this, Class, InParent, Name, Type);
@@ -130,7 +129,7 @@ UObject* UImportFactory::FactoryCreateText
 				}
 				else
 				{
-					//Warn->Logf(ELogVerbosity::Warning, TEXT("The Root map package name : '%s', conflicts with the existing object : '%s'"), *RootMapPackage->GetFullName(), *MapName);
+					UE_LOG(LogTemp, Log, TEXT("The Root map package name : '%s', conflicts with the existing object : '%s'"), *RootMapPackage->GetFullName(), *MapName);
 					//GEditor->GetEditorSubsystem<UImportSubsystem>()->BroadcastAssetPostImport(this, nullptr);
 					return nullptr;
 				}
@@ -240,7 +239,6 @@ UObject* UImportFactory::FactoryCreateText
 							else
 							{
 								UE_LOG(LogTemp, Warning, TEXT("Invalid archetype specified in subobject definition '%s': %s is not a child of Actor"), Str, *ObjectClass);
-								//Warn->Logf(ELogVerbosity::Warning, TEXT("Invalid archetype specified in subobject definition '%s': %s is not a child of Actor"),Str, *ObjectClass);
 							}
 						}
 					}
@@ -329,7 +327,7 @@ UObject* UImportFactory::FactoryCreateText
 		const FString&	PropText = ActorMapElement.Value;
 		if (Actor)
 		{
-			UImportFactory::ImportObjectProperties((uint8*)Actor, *PropText, Actor->GetClass(), Actor, Actor, Warn, 0, INDEX_NONE, NULL, &ExistingToNewMap);
+			UImportFactory::ImportObjectProperties((uint8*)Actor, *PropText, Actor->GetClass(), Actor, Actor, 0, INDEX_NONE, NULL, &ExistingToNewMap);
 		}
 	}
 
@@ -356,7 +354,7 @@ const TCHAR* UImportFactory::ImportObjectProperties(FImportObjectParamsEx& InPar
 				ContextSupplier->CurrentLine = InParams.LineNumber;
 			}
 		}
-		// InParams.Warn->SetContext(ContextSupplier);
+
 	}
 
 	//if (InParams.bShouldCallEditChange && InParams.SubobjectOuter != NULL)
@@ -385,7 +383,6 @@ const TCHAR* UImportFactory::ImportObjectProperties(FImportObjectParamsEx& InPar
 			InParams.ObjectStruct,
 			InParams.SubobjectRoot,
 			InParams.SubobjectOuter,
-			InParams.Warn,
 			InParams.Depth,
 			InstanceGraph,
 			InParams.ActorRemapper
@@ -420,7 +417,6 @@ const TCHAR* UImportFactory::ImportObjectProperties(FImportObjectParamsEx& InPar
 		if (ContextSupplier == &Supplier)
 		{
 			ContextSupplier = NULL;
-			// InParams.Warn->SetContext(NULL);
 		}
 	}
 
@@ -434,7 +430,7 @@ const TCHAR* UImportFactory::ImportObjectProperties(FImportObjectParamsEx& InPar
 	return NewSourceText;
 }
 
-const TCHAR* UImportFactory::ImportObjectProperties(uint8* DestData, const TCHAR* SourceText, UStruct* ObjectStruct, UObject* SubobjectRoot, UObject* SubobjectOuter, FFeedbackContext* Warn, int32 Depth, int32 LineNumber /*= INDEX_NONE*/, FObjectInstancingGraph* InstanceGraph /*= NULL*/, const TMap<AActor*, AActor*>* ActorRemapper /*= NULL */)
+const TCHAR* UImportFactory::ImportObjectProperties(uint8* DestData, const TCHAR* SourceText, UStruct* ObjectStruct, UObject* SubobjectRoot, UObject* SubobjectOuter, int32 Depth, int32 LineNumber /*= INDEX_NONE*/, FObjectInstancingGraph* InstanceGraph /*= NULL*/, const TMap<AActor*, AActor*>* ActorRemapper /*= NULL */)
 {
 	FImportObjectParamsEx Params;
 	{
@@ -443,7 +439,6 @@ const TCHAR* UImportFactory::ImportObjectProperties(uint8* DestData, const TCHAR
 		Params.ObjectStruct = ObjectStruct;
 		Params.SubobjectRoot = SubobjectRoot;
 		Params.SubobjectOuter = SubobjectOuter;
-		Params.Warn = Warn;
 		Params.Depth = Depth;
 		Params.LineNumber = LineNumber;
 		Params.InInstanceGraph = InstanceGraph;
@@ -466,7 +461,6 @@ const TCHAR* UImportFactory::ImportObjectProperties(uint8* DestData, const TCHAR
  * @param	SubobjectRoot					when dealing with nested subobjects, corresponds to the top-most outer that
  *										is not a subobject/template
  * @param	SubobjectOuter				the outer to use for creating subobjects/components. NULL when importing structdefaultproperties
- * @param	Warn						output device to use for log messages
  * @param	Depth						current nesting level
  * @param	InstanceGraph				contains the mappings of instanced objects and components to their templates
  * @param	ActorRemapper				a map of existing actors to new instances, used to replace internal references when a number of actors are copy+pasted
@@ -479,7 +473,6 @@ const TCHAR* UImportFactory::ImportProperties(
 	UStruct*					ObjectStruct,
 	UObject*					SubobjectRoot,
 	UObject*					SubobjectOuter,
-	FFeedbackContext*			Warn,
 	int32						Depth,
 	FObjectInstancingGraph&		InstanceGraph,
 	const TMap<AActor*, AActor*>* ActorRemapper
@@ -571,7 +564,7 @@ const TCHAR* UImportFactory::ImportProperties(
 		//	// If SubobjectOuter is NULL, we are importing defaults for a UScriptStruct's defaultproperties block
 		//	if (!bSubObjectsAllowed)
 		//	{
-		//		Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN BRUSH: Subobjects are not allowed in this context"));
+		//      UE_LOG(LogTemp,Log,TEXT("BEGIN BRUSH: Subobjects are not allowed in this context"));
 		//		return NULL;
 		//	}
 
@@ -662,7 +655,6 @@ const TCHAR* UImportFactory::ImportProperties(
 			if (!bSubObjectsAllowed)
 			{
 				UE_LOG(LogTemp, Log, TEXT("BEGIN OBJECT: Subobjects are not allowed in this context"));
-				// Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN OBJECT: Subobjects are not allowed in this context"));
 				return NULL;
 			}
 
@@ -675,7 +667,6 @@ const TCHAR* UImportFactory::ImportProperties(
 			if (bInvalidClass)
 			{
 				UE_LOG(LogTemp, Log, TEXT("BEGIN OBJECT: Invalid class specified: %s"), *StrLine);
-				// Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN OBJECT: Invalid class specified: %s"), *StrLine);
 				return NULL;
 			}
 
@@ -685,7 +676,6 @@ const TCHAR* UImportFactory::ImportProperties(
 			if (TemplateName == NAME_None)
 			{
 				UE_LOG(LogTemp, Log, TEXT("BEGIN OBJECT: Must specify valid name for subobject/component: %s"), *StrLine);
-				// Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN OBJECT: Must specify valid name for subobject/component: %s"), *StrLine);
 				return NULL;
 			}
 
@@ -716,7 +706,6 @@ const TCHAR* UImportFactory::ImportProperties(
 				{
 					// wasn't found
 					UE_LOG(LogTemp, Log, TEXT("BEGIN OBJECT: No base template named %s found in parent class %s: %s"), *TemplateName.ToString(), *ParentClass->GetName(), *StrLine);
-					// Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN OBJECT: No base template named %s found in parent class %s: %s"), *TemplateName.ToString(), *ParentClass->GetName(), *StrLine);
 					return NULL;
 				}
 
@@ -730,7 +719,7 @@ const TCHAR* UImportFactory::ImportProperties(
 			{
 				// since we're redefining an object in the same text block, only need to import properties again
 				SourceText = ImportObjectProperties((uint8*)BaseTemplate, SourceText, TemplateClass, SubobjectRoot, BaseTemplate,
-					Warn, Depth + 1, ContextSupplier ? ContextSupplier->CurrentLine : 0, &InstanceGraph, ActorRemapper);
+					Depth + 1, ContextSupplier ? ContextSupplier->CurrentLine : 0, &InstanceGraph, ActorRemapper);
 			}
 			else
 			{
@@ -776,7 +765,6 @@ const TCHAR* UImportFactory::ImportProperties(
 							{
 								// BaseTemplate should only be NULL if the Begin Object line specified a class
 								UE_LOG(LogTemp, Log, TEXT("BEGIN OBJECT: The component name %s is already used (if you want to override the component, don't specify a class): %s"), *TemplateName.ToString(), *StrLine);
-								// Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN OBJECT: The component name %s is already used (if you want to override the component, don't specify a class): %s"), *TemplateName.ToString(), *StrLine);
 								return NULL;
 							}
 
@@ -800,7 +788,6 @@ const TCHAR* UImportFactory::ImportProperties(
 						{
 							// BaseTemplate should only be NULL if the Begin Object line specified a class
 							UE_LOG(LogTemp, Log, TEXT("BEGIN OBJECT: A subobject named %s is already declared in a parent class.  If you intended to override that subobject, don't specify a class in the derived subobject definition: %s"), *TemplateName.ToString(), *StrLine);
-							// Warn->Logf(ELogVerbosity::Error, TEXT("BEGIN OBJECT: A subobject named %s is already declared in a parent class.  If you intended to override that subobject, don't specify a class in the derived subobject definition: %s"), *TemplateName.ToString(), *StrLine);
 							return NULL;
 						}
 					}
@@ -844,13 +831,7 @@ const TCHAR* UImportFactory::ImportProperties(
 						!!SubobjectOuter,
 						&InstanceGraph
 						);
-					if (ComponentTemplate && ComponentTemplate->GetClass()->IsChildOf(UActorComponent::StaticClass()))
-					{
-						UActorComponent* ComponentIns = Cast<UActorComponent>(ComponentTemplate);
-						ComponentIns->OnComponentCreated();
-						ComponentIns->ReregisterComponent();
-
-					}
+					
 				}
 				else
 				{
@@ -891,19 +872,25 @@ const TCHAR* UImportFactory::ImportProperties(
 					TemplateClass,
 					SubobjectRoot,
 					ComponentTemplate,
-					Warn,
 					Depth + 1,
 					ContextSupplier ? ContextSupplier->CurrentLine : 0,
 					&InstanceGraph,
 					ActorRemapper
 				);
+				if (ComponentTemplate && ComponentTemplate->GetClass()->IsChildOf(UActorComponent::StaticClass()))
+				{
+					UActorComponent* ComponentIns = Cast<UActorComponent>(ComponentTemplate);
+					ComponentIns->OnComponentCreated();
+					ComponentIns->ReregisterComponent();
+
+				}
 			}
 		}
 		else if (FParse::Command(&Str, TEXT("CustomProperties")))
 		{
 			check(SubobjectOuter);
 
-			SubobjectOuter->ImportCustomProperties(Str, Warn);
+			SubobjectOuter->ImportCustomProperties(Str,  /*Warn*/NULL);
 		}
 		else if (GetEND(&Str, TEXT("Actor")) || GetEND(&Str, TEXT("DefaultProperties")) || GetEND(&Str, TEXT("structdefaultproperties")) || (GetEND(&Str, TEXT("Object")) && Depth))
 		{
@@ -917,7 +904,7 @@ const TCHAR* UImportFactory::ImportProperties(
 		else
 		{
 			// Property.
-			UProperty::ImportSingleProperty(Str, DestData, ObjectStruct, SubobjectOuter, PortFlags, Warn, DefinedProperties);
+			UProperty::ImportSingleProperty(Str, DestData, ObjectStruct, SubobjectOuter, PortFlags, /*Warn*/NULL, DefinedProperties);
 		}
 	}
 

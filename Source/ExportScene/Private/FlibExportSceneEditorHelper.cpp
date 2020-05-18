@@ -103,7 +103,7 @@ bool UFlibExportSceneEditorHelper::ImportEditorScene(UWorld* World, const FStrin
 			const TCHAR* Paste = *ReadContent;
 			UImportFactory* ImportFactory = NewObject<UImportFactory>();
 			ImportFactory->FactoryCreateText(ULevel::StaticClass(), World->GetCurrentLevel(), World->GetCurrentLevel()->GetFName(),
-				RF_Transactional, NULL, TEXT("paste"), Paste, Paste + FCString::Strlen(Paste), NULL);
+				RF_Transactional, NULL, TEXT("paste"), Paste, Paste + FCString::Strlen(Paste));
 		}
 	}
 	return false;

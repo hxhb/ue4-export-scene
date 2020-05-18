@@ -68,7 +68,6 @@ struct FImportObjectParamsEx
 		ObjectStruct(NULL),
 		SubobjectRoot(NULL),
 		SubobjectOuter(NULL),
-		Warn(NULL),
 		Depth(0),
 		LineNumber(INDEX_NONE),
 		InInstanceGraph(NULL),
@@ -120,7 +119,7 @@ class UImportFactory :public UObject//  : public UFactory
 public:
 	UImportFactory(const FObjectInitializer& ObjectInitializer);
 	//~ Begin UFactory Interface
-	virtual UObject* FactoryCreateText(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, const TCHAR* Type, const TCHAR*& Buffer, const TCHAR* BufferEnd, FFeedbackContext* Warn);
+	virtual UObject* FactoryCreateText(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, const TCHAR* Type, const TCHAR*& Buffer, const TCHAR* BufferEnd);
 	//~ Begin UFactory Interface
 
 
@@ -143,7 +142,6 @@ public:
 	 *								if SubobjectOuter is a subobject, corresponds to the first object in SubobjectOuter's Outer chain that is not a subobject itself.
 	 *								if SubobjectOuter is not a subobject, should normally be the same value as SubobjectOuter
 	 * @param	SubobjectOuter		the object corresponding to DestData; this is the object that will used as the outer when creating subobjects from definitions contained in SourceText
-	 * @param	Warn				output device to use for log messages
 	 * @param	Depth				current nesting level
 	 * @param	LineNumber			used when importing defaults during script compilation for tracking which line the defaultproperties block begins on
 	 * @param	InstanceGraph		contains the mappings of instanced objects and components to their templates; used when recursively calling ImportObjectProperties; generally
@@ -158,7 +156,6 @@ public:
 		UStruct*			ObjectStruct,
 		UObject*			SubobjectRoot,
 		UObject*			SubobjectOuter,
-		FFeedbackContext*	Warn,
 		int32					Depth,
 		int32					LineNumber = INDEX_NONE,
 		FObjectInstancingGraph* InstanceGraph = NULL,
@@ -174,7 +171,6 @@ public:
 	 * @param	SubobjectRoot					when dealing with nested subobjects, corresponds to the top-most outer that
 	 *										is not a subobject/template
 	 * @param	SubobjectOuter				the outer to use for creating subobjects/components. NULL when importing structdefaultproperties
-	 * @param	Warn						output device to use for log messages
 	 * @param	Depth						current nesting level
 	 * @param	InstanceGraph				contains the mappings of instanced objects and components to their templates
 	 * @param	ActorRemapper				a map of existing actors to new instances, used to replace internal references when a number of actors are copy+pasted
@@ -187,7 +183,6 @@ public:
 		UStruct*					ObjectStruct,
 		UObject*					SubobjectRoot,
 		UObject*					SubobjectOuter,
-		FFeedbackContext*			Warn,
 		int32						Depth,
 		FObjectInstancingGraph&		InstanceGraph,
 		const TMap<AActor*, AActor*>* ActorRemapper
