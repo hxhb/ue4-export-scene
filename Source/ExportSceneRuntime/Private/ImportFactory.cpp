@@ -885,8 +885,8 @@ const TCHAR* UImportFactory::ImportProperties(
 				if (ComponentTemplate && ComponentTemplate->GetClass()->IsChildOf(UActorComponent::StaticClass()))
 				{
 					UActorComponent* ComponentIns = Cast<UActorComponent>(ComponentTemplate);
-					ComponentIns->OnComponentCreated();
-					ComponentIns->ReregisterComponent();
+					/*ComponentIns->OnComponentCreated();
+					ComponentIns->ReregisterComponent();*/
 
 				}
 			}
